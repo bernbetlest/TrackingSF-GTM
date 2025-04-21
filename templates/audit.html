@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Audit Aktivitas Login - SF Telkomsel</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Font Awesome -->
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i" rel="stylesheet" />
+    <!-- Core Theme CSS -->
+    <link href="../assets/css/styles.css" rel="stylesheet" />
+    <style>
+      .audit-table th {
+        background-color: #cc0000;
+        color: white;
+      }
+      .audit-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      .audit-table tr:hover {
+        background-color: #f1f1f1;
+      }
+    </style>
+  </head>
+  <body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+      <div class="container px-5">
+        <img src="../assets/assets/img/Telkomsel_2021.png" alt="Telkomsel_2021" class="mb-4" style="max-width: 175px;" />
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+          aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Audit Table Section -->
+    <header class="masthead text-center text-white">
+      <div class="masthead-content">
+        <div class="container px-5 py-5">
+            <img src="../assets/assets/img/Telkomsel Icon.svg" alt="Logo Telkomsel" class="mb-4" style="max-width: 150px;" />
+          <h2 class="masthead-heading mb-4">Tracking Aktivitas Login</h2>
+          <h2 class="masthead-heading mb-4">Sales Force</h2>
+          <button id="downloadCSV" class="btn btn-danger mb-3">
+            Unduh CSV
+          </button>          
+          <div class="table-responsive bg-white p-4 rounded shadow">
+            <table class="table table-bordered audit-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Waktu Login</th>
+                  <th>SF ID</th>
+                  <th>Nomor Telepon</th>
+                  <th>Branch</th>
+                  <th>WOK</th>
+                </tr>
+              </thead>
+              <tbody id="auditTableBody">
+                <!-- Baris akan ditambahkan secara dinamis via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="bg-circle-1 bg-circle"></div>
+      <div class="bg-circle-2 bg-circle"></div>
+      <div class="bg-circle-3 bg-circle"></div>
+      <div class="bg-circle-4 bg-circle"></div>
+    </header>
+
+    <!-- Footer -->
+    <footer class="py-5 bg-black">
+      <div class="container px-5">
+        <p class="m-0 text-center text-white small">Copyright &copy; Telkomsel 2025</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Script for Audit Table -->
+    <script>
+      const tbody = document.getElementById("auditTableBody");
+
+      fetch("http://127.0.0.1:5000/track")
+        .then(response => response.json())
+        .then(data => {
+          if (data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Belum ada aktivitas login.</td></tr>`;
+          } else {
+            data.forEach((log, index) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${log.waktu_login}</td>
+                <td>${log.sf_id}</td>
+                <td>${log.notelp}</td>
+                <td>${log.branch}</td>
+                <td>${log.wok}</td>
+              `;
+              tbody.appendChild(row);
+            });
+          }
+        })
+        .catch(error => {
+          console.error("Gagal mengambil data:", error);
+          tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Gagal mengambil data dari server.</td></tr>`;
+        });
+      
+        document.getElementById("downloadCSV").addEventListener("click", function () {
+          window.location.href = "http://127.0.0.1:5000/track/download";
+    });
+
+    // let csvContent = "data:text/csv;charset=utf-8," 
+    //   + [headers, ...rows].map(e => e.join(",")).join("\n");
+
+    // const encodedUri = encodeURI(csvContent);
+    // const link = document.createElement("a");
+    // link.setAttribute("href", encodedUri);
+    // link.setAttribute("download", "audit_login_sf_telkomsel.csv");
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+  // });
+    </script>    
+  </body>
+</html>
